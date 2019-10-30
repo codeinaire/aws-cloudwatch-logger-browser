@@ -25,9 +25,7 @@ const createLogStream = (logStreamName,  { uri, logGroupName, local }) => {
   }
 
   const headers = {
-    headers: {
-      'Content-Type': 'application/json'
-    }
+    'Content-Type': 'application/json'
   }
 
 	const request = axios.create({
@@ -97,9 +95,7 @@ const addLogsToStream = (entry, logGroupName, logStreamName, uri, sequenceToken=
   payload.sequenceToken = sequenceToken
 
   const headers = {
-    headers: {
-        'Content-Type': 'application/json'
-      }
+    'Content-Type': 'application/json'
   }
 
   console.log('payload', payload);
