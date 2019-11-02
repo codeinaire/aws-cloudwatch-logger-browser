@@ -87,8 +87,6 @@ const addLogsToStream = (entry, logGroupName, logStreamName, uri, sequenceToken=
 		logStreamName: logStreamName
   }
 
-
-  // TODO NOT REALLY SURE WHAT THIS DOES I'm not going to touch it for now, but may need to if not working
 	const tokenKey = logGroupName + '__' + logStreamName
 	sequenceToken = sequenceToken || _sequenceTokens.get(tokenKey)
 	if (sequenceToken)
@@ -98,7 +96,6 @@ const addLogsToStream = (entry, logGroupName, logStreamName, uri, sequenceToken=
     'Content-Type': 'application/json'
   }
 
-  console.log('payload', payload);
 	const request = axios.create({
 		baseURL: uri,
 		headers: headers
@@ -106,7 +103,7 @@ const addLogsToStream = (entry, logGroupName, logStreamName, uri, sequenceToken=
 
 	return retryCount > 3 || nothingToLog ? Promise.resolve(null) : request.post('', payload)
 		.then(results => {
-			//console.log('Yes')
+			// console.log('Yes')
 			const token = results.data.nextSequenceToken
 			_sequenceTokens.set(tokenKey, token)
 		})
@@ -163,16 +160,20 @@ const Logger = class {
       if (!uri)
 			throw new Error('Missing required argument: \'uri\' is required.')
 
-		let log
+    let log
 		if (!uploadFreq || uploadFreq < 0) {
+      // This doesn't batch send
 			log = (...args) => {
 
-				const logs = (args || []).map(x => JSON.stringify(x))
+        const now = Date.now();
+				const logs = (args || []).map(x => ({ message: x, timestamp: now }));
 				// console.log('Logging now...')
-				addLogsToStream(logs, logGroupName, logStreamName, uri)
+				addLogsToStream(logs, logGroupName, logStreamName, uri);
 			}
 		}
 		else {
+      // N.B This does batch send. This is better option
+      // make sure to use uploadFreq variable in config for this option
 			log = (...args) => {
 				// 1. Accumulate all logs
 				const now = Date.now()
@@ -191,12 +192,11 @@ const Logger = class {
 						addLogsToStream(data, logGroupName, logStreamName, uri)
 					}, uploadFreq))
 				}
-				//console.log('Buffering logs now...')
+ 				// console.log('Buffering logs now...')
 				// 3. In any case, memoize
 				_logbuffer.set(this, latestBuffer)
 			}
 		}
-
 		this.log = local && local != 'false' ? console.log : log
 	}
 }

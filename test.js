@@ -1,7 +1,7 @@
 const { createLogStream, Logger } = require('./index');
 
 // const logStreamConfig = {
-//   uri: "https://9pxl1vw0zg.execute-api.ap-southeast-2.amazonaws.com/prod/create-stream",
+//   uri: 'https://jfm86zasy2.execute-api.ap-southeast-2.amazonaws.com/prod/create-stream',
 //   logGroupName: 'nmm-client-group'
 // }
 
@@ -16,7 +16,7 @@ const config = {
 	logStreamName: 'test-stream',
 	uploadFreq: 10000, 	// Optional. Send logs to AWS LogStream in batches after 10 seconds intervals.
   local: false, 		// Optional. If set to true, the log will fall back to the standard 'console.log'.
-  uri: 'https://9pxl1vw0zg.execute-api.ap-southeast-2.amazonaws.com/prod/put-logs'
+  uri: 'https://zjy4b2tny0.execute-api.ap-southeast-2.amazonaws.com/prod/put-logs'
 };
 
 const logger = new Logger(config);
